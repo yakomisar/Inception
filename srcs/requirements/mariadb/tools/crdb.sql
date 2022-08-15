@@ -1,4 +1,5 @@
-CREATE DATABASE wordpress_db;
+CREATE DATABASE wordpress;
 CREATE USER 'jmacmill'@'%' IDENTIFIED BY 'strongparol';
-GRANT ALL PRIVILEGES ON wordpress_db.* TO 'jmacmill'@'%';
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'newstrongparol';
+GRANT ALL PRIVILEGES ON wordpress.* TO 'jmacmill'@'%';
+FLUSH PRIVILEGES;
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'superstrongparol';

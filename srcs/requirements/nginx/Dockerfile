@@ -1,14 +1,11 @@
 FROM debian:buster
 
-RUN apt update && \
-	apt install -y nginx openssl \
-		nano curl net-tools
-
-COPY tools/* /tmp/
+RUN apt update
+RUN apt install -y nginx openssl
 
 EXPOSE 443
 
-COPY ./conf/* /etc/nginx/sites-enabled/default
-COPY ./tools/* /var/www
+COPY ./conf/default /etc/nginx/sites-enabled/default
+COPY ./tools/start.sh /var/www
 
 CMD bash /var/www/start.sh

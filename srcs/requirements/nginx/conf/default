@@ -1,0 +1,35 @@
+server {
+	listen     443 ssl;
+	listen [::]:443 ssl;
+	server_name jmacmill.42.fr;
+	root /var/www/html/wordpress;
+
+##
+# SSL Settings
+##
+    ssl_certificate_key /etc/ssl/private/nginx.key;
+    ssl_certificate /etc/ssl/certs/nginx.crt;
+
+	index index.php;
+
+	ssl_protocols TLSv1.3;
+	ssl_prefer_server_ciphers off;
+
+	location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+##
+#Configuration to work with php and be able to install wordpress
+#
+
+location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass wordpress:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+}

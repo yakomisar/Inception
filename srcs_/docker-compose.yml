@@ -1,0 +1,67 @@
+version: '3.9'
+
+services:
+  mariadb:
+    container_name: mariadb
+    build: ./requirements/mariadb
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    networks:
+      - project
+    restart: always
+
+  wordpress:
+    container_name: wordpress
+    build: ./requirements/wordpress
+    env_file: .env
+    # мы монтируем том с именем wordpress на точку монтирования /var/www/html/wordpress, 
+    # созданную образом WordPress. 
+    # Использование тома с именем таким образом позволит разделить наш код приложения с другими контейнерами
+    volumes:
+      - wp:/var/www/html/wordpress
+      # мы добавляем контейнер wordpress в сеть project
+    networks:
+      - project
+  # этот параметр гарантирует, что наши контейнеры будут запускаться в порядке зависимости, 
+  # и контейнер wordpress запускается после контейнера mariadb. 
+  # Наше приложение WordPress зависит от наличия базы данных приложения и пользователя, 
+  # поэтому установка такого порядка зависимостей позволит выполнять запуск приложения корректно
+    depends_on:
+      - mariadb
+
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx
+    hostname: localhost
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - project
+    depends_on:
+      - wordpress
+    ports:
+      - "443:443"
+
+volumes:
+  db:
+    name: db
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USERNAME}/data/db
+  wp:
+    name: wp
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USERNAME}/data/wp
+
+networks:
+    project:
+      driver: bridge

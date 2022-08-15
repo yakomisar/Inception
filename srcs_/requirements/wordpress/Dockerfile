@@ -25,11 +25,11 @@ RUN mkdir /run/php
 
 #Launch script
 
-COPY ./tools/create_wordpress.sh /tmp/
+COPY ./tools/start.sh /tmp/
 #ENTRYPOINT ["create_wordpress.sh"]
 
 WORKDIR /var/www/html/
 
 EXPOSE 9000
 
-CMD ["sh", "/tmp/create_wordpress.sh"]
+CMD ["sh", "/tmp/start.sh"]
